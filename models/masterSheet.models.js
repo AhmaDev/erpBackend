@@ -114,7 +114,7 @@ MasterSheet.findById = function (id, result) {
 
 
     // FINAL QUERY
-    connection.query(`SELECT masterSheet.*, Section.sectionName, masterSheetType.*, masterSheetStudyType.*,   ${lessonsSubQuery}, ${studentsSubQuery} FROM masterSheet LEFT JOIN studentPortal.Section ON Section.idSection = sectionId LEFT JOIN masterSheetType ON masterSheetType.idMasterSheetType = masterSheet.masterSheetTypeId LEFT JOIN masterSheetStudyType ON masterSheetStudyType.idMasterSheetStudyType = masterSheet.masterSheetStudyTypeId WHERE idMasterSheet = ${id}`, (err, res) => {
+    connection.query(`SELECT masterSheet.*, Section.sectionName, masterSheetType.*, masterSheetStudyType.*, YearStudy.year As yearName,  ${lessonsSubQuery}, ${studentsSubQuery} FROM masterSheet LEFT JOIN studentPortal.Section ON Section.idSection = sectionId LEFT JOIN studentPortal.YearStudy ON YearStudy.idYearStudy = masterSheet.studyYearId LEFT JOIN masterSheetType ON masterSheetType.idMasterSheetType = masterSheet.masterSheetTypeId LEFT JOIN masterSheetStudyType ON masterSheetStudyType.idMasterSheetStudyType = masterSheet.masterSheetStudyTypeId WHERE idMasterSheet = ${id}`, (err, res) => {
         if (err) {
             console.log("Error while getting masterSheet by ID", err);
             result(err, null);
