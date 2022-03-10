@@ -104,13 +104,13 @@ MasterSheet.findById = function (id, result) {
     let lessonMarksSubQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT('idLessonMark', idLessonMark, 'markTypeId', markTypeId, 'markTypeName',markTypeName ,'maximumDegree', maximumDegree, 'isFinal', isFinal)) FROM lessonMark JOIN markType ON markType.idMarkType = lessonMark.markTypeId WHERE lessonMark.lessonId = lesson.idLesson)`;
 
     // GET ALL LESSONS FOR SELECTED MASTERSHEET
-    let lessonsSubQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT('idLesson', idLesson, 'lessonName', lessonName, 'secondLessonName', secondLessonName, 'lessonCredit', lessonCredit, 'marks', ${lessonMarksSubQuery})) FROM lesson WHERE lesson.lessonLevel = masterSheet.studyLevel AND lesson.sectionId = masterSheet.sectionId AND lesson.yearStudyId = masterSheet.studyYearId AND lesson.lessonCourse = masterSheet.masterSheetStudyTypeId ORDER BY lesson.lessonCredit DESC) As lessons`;
+    let lessonsSubQuery = `(SELECT IFNULL(JSON_ARRAYAGG(JSON_OBJECT('idLesson', idLesson, 'lessonName', lessonName, 'secondLessonName', secondLessonName, 'lessonCredit', lessonCredit, 'marks', ${lessonMarksSubQuery})),'[]') FROM lesson WHERE lesson.lessonLevel = masterSheet.studyLevel AND lesson.sectionId = masterSheet.sectionId AND lesson.yearStudyId = masterSheet.studyYearId AND lesson.lessonCourse = masterSheet.masterSheetStudyTypeId ORDER BY lesson.lessonCredit DESC) As lessons`;
 
     // GET ALL MARKS FOR EACH STUDENT THEN ATTACH IT TO STUDENTS SUB QUERY
-    let studentMarksSubQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT('idMasterSheetMarks', idMasterSheetMarks, 'studentId', studentId, 'masterSheetMarkTypeId',masterSheetMarkTypeId ,'degree', degree, 'lessonId', lessonId)) FROM masterSheetMarks JOIN markType ON markType.idMarkType = masterSheetMarks.masterSheetMarkTypeId WHERE masterSheetMarks.studentId = masterSheetStudent.studentId AND masterSheetMarks.masterSheetId = masterSheet.idMasterSheet)`;
+    let studentMarksSubQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT('idMasterSheetMarks', idMasterSheetMarks, 'studentId', studentId, 'masterSheetMarkTypeId',masterSheetMarkTypeId ,'degree', degree, 'lessonId', lessonId, 'isFinal', isFinal, 'markStatusId', markStatusId)) FROM masterSheetMarks JOIN markType ON markType.idMarkType = masterSheetMarks.masterSheetMarkTypeId WHERE masterSheetMarks.studentId = masterSheetStudent.studentId AND masterSheetMarks.masterSheetId = masterSheet.idMasterSheet)`;
 
     // GET ALL STUDENTS FOR SELECTED MASTERSHEET
-    let studentsSubQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT('idMasterSheetStudent', idMasterSheetStudent,'studentId',studentId,'studentName',Student.studentName,'studentCollegeNumber', Student.collegeNumber ,'studentEmail', Student.mail ,'notice', notice, 'marks', ${studentMarksSubQuery})) FROM masterSheetStudent JOIN studentPortal.Student ON studentPortal.Student.idStudent = masterSheetStudent.studentId WHERE masterSheetStudent.masterSheetId = masterSheet.idMasterSheet) As students`;
+    let studentsSubQuery = `(SELECT IFNULL(JSON_ARRAYAGG(JSON_OBJECT('idMasterSheetStudent', idMasterSheetStudent,'studentId',studentId,'studentName',Student.studentName,'studentCollegeNumber', Student.collegeNumber ,'studentEmail', Student.mail ,'notice', notice, 'marks', ${studentMarksSubQuery})),'[]') FROM masterSheetStudent JOIN studentPortal.Student ON studentPortal.Student.idStudent = masterSheetStudent.studentId WHERE masterSheetStudent.masterSheetId = masterSheet.idMasterSheet) As students`;
 
 
     // FINAL QUERY
@@ -124,9 +124,7 @@ MasterSheet.findById = function (id, result) {
             result({ kind: 'not_found' }, null);
         } else {
             res[0].lessons = JSON.parse(res[0].lessons)
-            fixedJson = res[0].lessons.map(row => (row.marks == null ? row.marks = [] : row.marks = row.marks, row));
             res[0].students = JSON.parse(res[0].students)
-            fixedJson = res[0].students.map(row => (row.marks == null ? row.marks = [] : row.marks = row.marks, row));
             result(null, res[0]);
         }
     });
