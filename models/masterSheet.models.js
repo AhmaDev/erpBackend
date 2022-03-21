@@ -145,6 +145,22 @@ MasterSheet.findBySectionId = function (id, result) {
     });
 };
 
+MasterSheet.getAllMasterSheetTypes = function (result) {
+    connection.query(`SELECT * FROM masterSheetType`, (err, res) => {
+        if (err) {
+            console.log("Error while getting masterSheet by ID", err);
+            result(err, null);
+            return;
+        }
+        if (res.length == 0) {
+            result({ kind: 'not_found' }, null);
+        } else {
+            result(null, res);
+        }
+    });
+};
+
+
 
 MasterSheet.update = function (id, data, result) {
     connection.query(`UPDATE masterSheet SET ? WHERE idMasterSheet = ${id}`, data, (err, res) => {

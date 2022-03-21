@@ -7,6 +7,7 @@ router.get('/masterSheets/', masterSheet.findAll);
 router.post('/addMasterSheet/', auth.roles('REP'), masterSheet.create);
 router.get('/masterSheet/:id', masterSheet.findOne);
 router.get('/sectionMasterSheets/:id', masterSheet.findBySectionId);
+router.get('/masterSheetTypes/', masterSheet.findAllMasterSheetTypes);
 router.put('/masterSheet/:id', auth.roles('REP'), masterSheet.updateOne);
 router.delete('/masterSheet/:id', auth.roles('REP ADMIN'), masterSheet.deleteOne);
 

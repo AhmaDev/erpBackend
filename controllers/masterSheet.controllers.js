@@ -31,6 +31,13 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.findAllMasterSheetTypes = (req, res) => {
+    MasterSheet.getAllMasterSheetTypes( (err, data) => {
+        if (err) res.sendStatus(500);
+        else res.send(data);
+    });
+};
+
 exports.findOne = (req, res) => {
     MasterSheet.findById(req.params.id, (err, data) => {
         if (err) {
