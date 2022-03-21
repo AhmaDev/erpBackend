@@ -40,6 +40,9 @@ LevelType.getAllBySectionId = function (id, queries, result) {
     if (queries.year !== undefined) {
         query = query + ` AND studyYearId = ${queries.year}`;
     }
+    if (queries.level !== undefined) {
+        query = query + ` AND level = ${queries.level}`;
+    }
     connection.query(`SELECT * FROM levelType WHERE sectionId = ${id} ${query}`, (err, res) => {
         if (err) {
             console.log("Error while getting all LevelType", err);

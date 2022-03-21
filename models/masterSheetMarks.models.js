@@ -11,18 +11,47 @@ const MasterSheetMarks = function (masterSheetMarks) {
 };
 
 MasterSheetMarks.create = function (newMasterSheetMarks, result) {
-    connection.query(`INSERT INTO masterSheetMarks SET ?`, newMasterSheetMarks, (err, res) => {
-        if (err) {
-            console.log("Error while adding a MasterSheetMarks", err);
-            result(err, null);
-            return;
+    connection.query(`SELECT * FROM masterSheetMarks WHERE lessonId = ? AND studentId = ? AND masterSheetId = ? AND masterSheetMarkTypeId = ?`, [
+        newMasterSheetMarks.lessonId,
+        newMasterSheetMarks.studentId,
+        newMasterSheetMarks.masterSheetId,
+        newMasterSheetMarks.masterSheetMarkTypeId,
+    ], (err, res) => {
+        if (res.length > 0) {
+            connection.query(`UPDATE masterSheetMarks SET ? WHERE idMasterSheetMarks = ${res[0].idMasterSheetMarks}`, newMasterSheetMarks, (err, res) => {
+                if (err) {
+                    console.log("Error while adding a MasterSheetMarks", err);
+                    result(err, null);
+                    return;
+                }
+                result(null, { idMasterSheetMarks: res.insertId, ...newMasterSheetMarks });
+            });
+        } else {
+            connection.query(`INSERT INTO masterSheetMarks SET ?`, newMasterSheetMarks, (err, res) => {
+                if (err) {
+                    console.log("Error while adding a MasterSheetMarks", err);
+                    result(err, null);
+                    return;
+                }
+                result(null, { idMasterSheetMarks: res.insertId, ...newMasterSheetMarks });
+            });
         }
-        result(null, { idMasterSheetMarks: res.insertId, ...newMasterSheetMarks });
     });
 };
 
 MasterSheetMarks.getAll = function (result) {
     connection.query(`SELECT * FROM masterSheetMarks`, (err, res) => {
+        if (err) {
+            console.log("Error while getting all MasterSheetMarks", err);
+            result(err, null);
+            return;
+        }
+        result(null, res);
+    });
+};
+
+MasterSheetMarks.getAllMarkStatus = function (result) {
+    connection.query(`SELECT * FROM markStatus`, (err, res) => {
         if (err) {
             console.log("Error while getting all MasterSheetMarks", err);
             result(err, null);
@@ -66,7 +95,7 @@ MasterSheetMarks.delete = function (id, result) {
             result(err, null);
             return;
         }
-        result(null, {message: `MasterSheetMarks ID ${id} has been deleted successfully`});
+        result(null, { message: `MasterSheetMarks ID ${id} has been deleted successfully` });
     })
 }
 

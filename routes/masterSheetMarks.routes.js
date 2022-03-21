@@ -4,6 +4,7 @@ const masterSheetMarks = require('../controllers/masterSheetMarks.controllers');
 var auth = require('../middlewares/auth.middlewares');
 
 router.get('/masterSheetMarks/', masterSheetMarks.findAll);
+router.get('/markStatus/', masterSheetMarks.findAllMarkStatus);
 router.post('/addMasterSheetMark/', auth.roles('REP'), masterSheetMarks.create);
 router.get('/masterSheetMark/:id', masterSheetMarks.findOne);
 router.put('/masterSheetMark/:id', auth.roles('REP'), masterSheetMarks.updateOne);

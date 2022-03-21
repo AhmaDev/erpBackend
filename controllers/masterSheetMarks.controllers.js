@@ -30,6 +30,13 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.findAllMarkStatus = (req, res) => {
+    MasterSheetMarks.getAllMarkStatus((err, data) => {
+        if (err) res.sendStatus(500);
+        else res.send(data);
+    });
+};
+
 exports.findOne = (req, res) => {
     MasterSheetMarks.findById(req.params.id, (err, data) => {
         if (err) {
