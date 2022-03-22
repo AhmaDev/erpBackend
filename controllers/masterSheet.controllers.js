@@ -31,8 +31,15 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.findAllTeacherMasterSheets = (req, res) => {
+    MasterSheet.getAllByTeacherId(req.params.id, req.query, (err, data) => {
+        if (err) res.sendStatus(500);
+        else res.send(data);
+    });
+};
+
 exports.findAllMasterSheetTypes = (req, res) => {
-    MasterSheet.getAllMasterSheetTypes( (err, data) => {
+    MasterSheet.getAllMasterSheetTypes((err, data) => {
         if (err) res.sendStatus(500);
         else res.send(data);
     });

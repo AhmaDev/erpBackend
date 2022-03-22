@@ -4,6 +4,7 @@ const masterSheet = require('../controllers/masterSheet.controllers');
 var auth = require('../middlewares/auth.middlewares');
 
 router.get('/masterSheets/', masterSheet.findAll);
+router.get('/teacherMasterSheets/:id', masterSheet.findAllTeacherMasterSheets);
 router.post('/addMasterSheet/', auth.roles('REP'), masterSheet.create);
 router.get('/masterSheet/:id', masterSheet.findOne);
 router.get('/sectionMasterSheets/:id', masterSheet.findBySectionId);

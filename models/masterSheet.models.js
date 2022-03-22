@@ -83,6 +83,28 @@ MasterSheet.getAll = function (queries, result) {
     });
 };
 
+
+MasterSheet.getAllByTeacherId = function (id, queries, result) {
+    connection.query(`SELECT * FROM lesson WHERE teacherId = ${id} AND yearStudyId = ${queries.year} GROUP BY sectionId,lessonLevel`, (err, res) => {
+        if (err) {
+            console.log("Error while getting all masterSheet", err);
+            result(err, null);
+            return;
+        }
+        var sections = res.length > 0 ? JSON.stringify(res.map(e => e.sectionId)).slice(1, -1) : 0;
+        var levels = res.length > 0 ? JSON.stringify(res.map(e => e.lessonLevel)).slice(1, -1) : 0;
+        connection.query(`SELECT * FROM masterSheet LEFT JOIN masterSheetType ON masterSheetType.idMasterSheetType = masterSheet.masterSheetTypeId LEFT JOIN masterSheetStudyType ON masterSheetStudyType.idMasterSheetStudyType = masterSheet.masterSheetStudyTypeId WHERE studyLevel IN (${levels}) AND sectionId IN (${sections})`, (err, res) => {
+            if (err) {
+                console.log("Error while getting all masterSheet", err);
+                result(err, null);
+                return;
+            }
+            result(null, res);
+
+        })
+    });
+}
+
 MasterSheet.findById = function (id, result) {
 
 
