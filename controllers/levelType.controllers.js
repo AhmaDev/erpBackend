@@ -22,14 +22,14 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-    LevelType.getAll((err, data) => {
+    LevelType.getAll(req.query, (err, data) => {
         if (err) res.sendStatus(500);
         else res.send(data);
     });
 };
 
 exports.findAllBySectionId = (req, res) => {
-    LevelType.getAllBySectionId(req.params.id, req.query ,(err, data) => {
+    LevelType.getAllBySectionId(req.params.id, req.query, (err, data) => {
         if (err) res.sendStatus(500);
         else res.send(data);
     });

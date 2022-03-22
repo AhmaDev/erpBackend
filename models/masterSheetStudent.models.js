@@ -8,7 +8,7 @@ const MasterSheetStudent = function (masterSheetStudent) {
 };
 
 MasterSheetStudent.create = function (newMasterSheetStudent, result) {
-    connection.query(`INSERT INTO masterSheetStudent SET ?`, newMasterSheetStudent, (err, res) => {
+    connection.query(`INSERT INTO masterSheetStudent (masterSheetId,studentId,notice,createdBy) VALUES ?`, [newMasterSheetStudent], (err, res) => {
         if (err) {
             console.log("Error while adding a MasterSheetStudent", err);
             result(err, null);

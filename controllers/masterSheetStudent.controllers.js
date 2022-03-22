@@ -7,14 +7,8 @@ exports.create = (req, res) => {
             message: "Body is empty"
         });
     }
-    const masterSheetStudent = new MasterSheetStudent({
-        masterSheetId: req.body.masterSheetId,
-        studentId: req.body.studentId,
-        notice: req.body.notice,
-        createdBy: req.body.createdBy,
-    });
 
-    MasterSheetStudent.create(masterSheetStudent, (err, data) => {
+    MasterSheetStudent.create(req.body, (err, data) => {
         if (err) res.sendStatus(500);
         else res.send(data);
     })

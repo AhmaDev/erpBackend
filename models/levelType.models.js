@@ -19,8 +19,21 @@ LevelType.create = function (newLevelType, result) {
     });
 };
 
-LevelType.getAll = function (result) {
-    connection.query(`SELECT * FROM levelType`, (err, res) => {
+LevelType.getAll = function (queries,result) {
+
+    let query = '';
+    let order = '';
+    let limit = '';
+
+    if (queries.year !== undefined) {
+        query = query + ` AND studyYearId IN (${queries.year})`;
+    }
+
+    if (queries.level !== undefined) {
+        query = query + ` AND level IN (${queries.level})`;
+    }
+
+    connection.query(`SELECT * FROM levelType WHERE 1=1 ${query} ${order} ${limit}`, (err, res) => {
         if (err) {
             console.log("Error while getting all LevelType", err);
             result(err, null);
