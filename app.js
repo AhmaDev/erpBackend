@@ -3,12 +3,19 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+const history = require("connect-history-api-fallback");
 var app = express();
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+   history({
+      disableDotRule: true,
+      verbose: true,
+   })
+);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(staticFileMiddleware);
 app.use(cors());
@@ -25,8 +32,4 @@ app.use(apiBaseUrl, require('./routes/levelType.routes'));
 app.use(apiBaseUrl, require('./routes/masterSheetMarks.routes'));
 app.use(apiBaseUrl, require('./routes/masterSheetStudent.routes'));
 
-// Handles any requests that don't match the ones above
-app.get('*', (req,res) =>{
-    res.sendFile(path.join(__dirname+'/public/index.html'));
-});
 module.exports = app;
