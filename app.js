@@ -17,7 +17,6 @@ app.use(
    })
 );
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(staticFileMiddleware);
 app.use(cors());
 
 var apiBaseUrl = '/api/';
