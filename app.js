@@ -8,7 +8,7 @@ var history = require('connect-history-api-fallback');
 
 var app = express();
 
-app.use(history());
+// app.use(history());
 
 app.use(logger('dev'));
 app.use(express.json());
