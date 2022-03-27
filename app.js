@@ -3,8 +3,12 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+var history = require('connect-history-api-fallback');
+
 
 var app = express();
+
+app.use(history());
 
 app.use(logger('dev'));
 app.use(express.json());
