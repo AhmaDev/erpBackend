@@ -7,6 +7,6 @@ router.get('/students', student.findAll);
 router.get('/student/:id', student.findOne);
 router.put('/student/:id', auth.roles('REP'), student.updateOne);
 router.put('/studentLevel/:id', auth.roles('REP'), student.updateClass);
-router.delete('/student/:id', auth.roles('REP ADMIN'), student.deleteOne);
+router.delete('/student/:id', auth.roles('REP'), student.deleteOne);
 
 module.exports = router;

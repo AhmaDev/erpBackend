@@ -8,6 +8,6 @@ router.get('/yearStudies/', lesson.findAllYears);
 router.post('/addLesson/', auth.roles('REP'), lesson.create);
 router.get('/lesson/:id', lesson.findOne);
 router.put('/lesson/:id', auth.roles('REP'), lesson.updateOne);
-router.delete('/lesson/:id', auth.roles('REP ADMIN'), lesson.deleteOne);
+router.delete('/lesson/:id', auth.roles('REP'), lesson.deleteOne);
 
 module.exports = router;

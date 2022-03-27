@@ -8,6 +8,6 @@ router.get('/markStatus/', masterSheetMarks.findAllMarkStatus);
 router.post('/addMasterSheetMark/', auth.roles('REP'), masterSheetMarks.create);
 router.get('/masterSheetMark/:id', masterSheetMarks.findOne);
 router.put('/masterSheetMark/:id', auth.roles('REP'), masterSheetMarks.updateOne);
-router.delete('/masterSheetMark/:id', auth.roles('REP ADMIN'), masterSheetMarks.deleteOne);
+router.delete('/masterSheetMark/:id', auth.roles('REP'), masterSheetMarks.deleteOne);
 
 module.exports = router;
