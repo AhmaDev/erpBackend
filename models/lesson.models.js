@@ -120,13 +120,27 @@ Lesson.update = function (id, data, result) {
 };
 
 Lesson.delete = (id, result) => {
-    portalConnection.query(`DELETE FROM lesson WHERE idLesson = ${id}`, (err, res) => {
+    connection.query(`DELETE FROM lesson WHERE idLesson = ${id}`, (err, res) => {
         if (err) {
             console.log("Error while deleting a lesson", err);
             result(err, null);
             return;
         }
-        result(null, { message: `Lesson ID ${id} has been deleted successfully` });
+        connection.query(`DELETE FROM lessonMark WHERE lessonId = ${id}`, (err, res) => {
+            if (err) {
+                console.log("Error while deleting a lesson", err);
+                result(err, null);
+                return;
+            }
+            connection.query(`DELETE FROM masterSheetMarks WHERE lessonId = ${id}`, (err, res) => {
+                if (err) {
+                    console.log("Error while deleting a lesson", err);
+                    result(err, null);
+                    return;
+                }
+                result(null, { message: `Lesson ID ${id} has been deleted successfully` });
+            });
+        });
     });
 }
 
