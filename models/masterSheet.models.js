@@ -202,7 +202,21 @@ MasterSheet.delete = function (id, result) {
             result(err, null);
             return;
         }
-        result(null, { message: `MasterSheet ID ${id} has been deleted successfully` });
+        connection.query(`DELETE FROM masterSheetMarks WHERE masterSheetId = ?`, id, (err, res) => {
+            if (err) {
+                console.log("Error while deleting masterSheet by ID", err);
+                result(err, null);
+                return;
+            }
+            connection.query(`DELETE FROM masterSheetStudent WHERE masterSheetId = ?`, id, (err, res) => {
+                if (err) {
+                    console.log("Error while deleting masterSheet by ID", err);
+                    result(err, null);
+                    return;
+                }
+                result(null, { message: `MasterSheet ID ${id} has been deleted successfully` });
+            })
+        })
     })
 }
 

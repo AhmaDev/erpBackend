@@ -10,6 +10,6 @@ router.get('/masterSheet/:id', masterSheet.findOne);
 router.get('/sectionMasterSheets/:id', masterSheet.findBySectionId);
 router.get('/masterSheetTypes/', masterSheet.findAllMasterSheetTypes);
 router.put('/masterSheet/:id', auth.roles('REP'), masterSheet.updateOne);
-router.delete('/masterSheet/:id', auth.roles('REP ADMIN'), masterSheet.deleteOne);
+router.delete('/masterSheet/:id', auth.roles('REP'), masterSheet.deleteOne);
 
 module.exports = router;
