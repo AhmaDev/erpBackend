@@ -14,7 +14,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 var apiBaseUrl = '/api/';
@@ -28,5 +27,7 @@ app.use(apiBaseUrl, require('./routes/lessonMark.routes'));
 app.use(apiBaseUrl, require('./routes/levelType.routes'));
 app.use(apiBaseUrl, require('./routes/masterSheetMarks.routes'));
 app.use(apiBaseUrl, require('./routes/masterSheetStudent.routes'));
+
+app.use(express.static(path.join(__dirname, 'public')));
 
 module.exports = app;
