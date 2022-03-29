@@ -88,6 +88,18 @@ MasterSheetMarks.update = function (id, data, result) {
     });
 };
 
+
+MasterSheetMarks.multiUpdate = function (id, data, result) {
+    connection.query(`UPDATE masterSheetMarks SET ? WHERE idMasterSheetMarks IN (${id})`, data, (err, res) => {
+        if (err) {
+            console.log("Error while updating MasterSheetMarks by ID", err);
+            result(err, null);
+            return;
+        }
+        result(null, { idMasterSheetMarks: res.insertId, ...data });
+    });
+};
+
 MasterSheetMarks.delete = function (id, result) {
     connection.query(`DELETE FROM masterSheetMarks WHERE idMasterSheetMarks = ?`, id, (err, res) => {
         if (err) {

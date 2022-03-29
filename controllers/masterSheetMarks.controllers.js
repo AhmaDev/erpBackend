@@ -55,6 +55,13 @@ exports.updateOne = (req, res) => {
     })
 }
 
+exports.multiUpdate = (req, res) => {
+    MasterSheetMarks.multiUpdate(JSON.stringify(req.body.ids).slice(1, -1), req.body.degree, (err, data) => {
+        if (err) res.sendStatus(500);
+        else res.send(data);
+    })
+}
+
 exports.deleteOne = (req, res) => {
     MasterSheetMarks.delete(req.params.id, (err, data) => {
         if (err) res.sendStatus(500);
