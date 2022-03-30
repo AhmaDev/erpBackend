@@ -8,7 +8,7 @@ const MasterSheet = function (masterSheet) {
     this.studyType = masterSheet.studyType;
     this.masterSheetTypeId = masterSheet.masterSheetTypeId;
     this.masterSheetStudyTypeId = masterSheet.masterSheetStudyTypeId;
-    this.materSheetNotice = masterSheet.materSheetNotice;
+    this.masterSheetNotice = masterSheet.masterSheetNotice;
     this.createdBy = masterSheet.createdBy;
 };
 

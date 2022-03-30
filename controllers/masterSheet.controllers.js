@@ -14,7 +14,7 @@ exports.create = (req, res) => {
         studyType: req.body.studyType,
         masterSheetTypeId: req.body.masterSheetTypeId,
         masterSheetStudyTypeId: req.body.masterSheetStudyTypeId,
-        materSheetNotice: req.body.materSheetNotice,
+        masterSheetNotice: req.body.masterSheetNotice,
         createdBy: req.body.createdBy,
     });
 
