@@ -73,7 +73,7 @@ MasterSheet.getAll = function (queries, result) {
         limit = `LIMIT ${queries.limit}`
     }
 
-    connection.query(`SELECT * FROM masterSheet LEFT JOIN masterSheetType ON masterSheetType.idMasterSheetType = masterSheet.masterSheetTypeId LEFT JOIN masterSheetStudyType ON masterSheetStudyType.idMasterSheetStudyType = masterSheet.masterSheetStudyTypeId WHERE 1=1 ${query} ${order} ${limit}`, (err, res) => {
+    connection.query(`SELECT masterSheet.*, masterSheetType.*,  (SELECT masterSheetStudyTypeId FROM levelType WHERE sectionId = masterSheet.sectionId AND level = masterSheet.studyLevel AND studyYearId = masterSheet.studyYearId LIMIT 1) As levelType, IF((SELECT masterSheetStudyTypeId FROM levelType WHERE sectionId = masterSheet.sectionId AND level = masterSheet.studyLevel AND studyYearId = masterSheet.studyYearId LIMIT 1) = 1 ,"النظام السنوي","النظام الفصلي") As masterSheetStudyTypeName FROM masterSheet LEFT JOIN masterSheetType ON masterSheetType.idMasterSheetType = masterSheet.masterSheetTypeId LEFT JOIN masterSheetStudyType ON masterSheetStudyType.idMasterSheetStudyType = masterSheet.masterSheetStudyTypeId WHERE 1=1 ${query} ${order} ${limit}`, (err, res) => {
         if (err) {
             console.log("Error while getting all masterSheet", err);
             result(err, null);
