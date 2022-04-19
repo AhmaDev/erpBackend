@@ -1,4 +1,5 @@
 const portalConnection = require('../helpers/studentsDatabase.config');
+const connection = require('../helpers/db.config');
 
 const User = function (user) {
     this.userName = User.userName;
