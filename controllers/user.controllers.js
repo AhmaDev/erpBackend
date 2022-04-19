@@ -59,6 +59,17 @@ exports.findOne = (req, res) => {
     })
 };
 
+exports.findSettings = (req, res) => {
+    User.getSettings(req.query.variable, (err, data) => {
+        if (err) {
+            if (err.kind == "not_found") res.sendStatus(404);
+            else res.sendStatus(500);
+        }
+        else res.send(data);
+    })
+};
+
+
 exports.updateOne = (req, res) => {
     User.update(req.params.id, req.body, (err, data) => {
         if (err) res.sendStatus(500);

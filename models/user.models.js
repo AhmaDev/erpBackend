@@ -56,6 +56,17 @@ User.getAll = (result) => {
     });
 };
 
+
+User.getSettings = (variable, result) => {
+    connection.query(`SELECT settings.value FROM settings WHERE variable = ?`, [variable], (err, res) => {
+        if (res.length > 0) {
+            result(null, res[0]);
+        } else {
+            result(err, null);
+        }
+    });
+};
+
 User.update = (id, user, result) => {
     portalConnection.query(`UPDATE user SET ? WHERE idUser = ${id}`, user, (err, res) => {
         if (err) {
