@@ -49,7 +49,7 @@ Student.getAll = (queries, result) => {
     **/
 
   let query = "";
-  let order = "ORDER BY studentName ASC";
+  let order = "";
   let limit = "";
   let having = "";
 
