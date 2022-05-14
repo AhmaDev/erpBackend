@@ -71,7 +71,7 @@ MasterSheetMarks.multiCreate = function (newMasterSheetMarks, result) {
   connection.query(
     `INSERT INTO masterSheetMarks (masterSheetId,studentId,masterSheetMarkTypeId,degree,lessonId,markStatusId,createdBy) VALUES ?`,
     [marks],
-    (err, result) => {
+    (err, resultApp) => {
       if (err) {
         console.log("Error while adding a MasterSheetMarks", err);
         result(err, null);
