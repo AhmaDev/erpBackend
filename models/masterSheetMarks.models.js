@@ -78,7 +78,7 @@ MasterSheetMarks.multiCreate = function (newMasterSheetMarks, result) {
         return;
       }
       result(null, {
-        message: success,
+        message: "success",
       });
     },
   );
