@@ -69,7 +69,7 @@ MasterSheetMarks.multiCreate = function (newMasterSheetMarks, result) {
     e.createdBy,
   ]);
   connection.query(
-    `INSERT INTO masterSheetMarks (masterSheetId,studentId,masterSheetMarkTypeId,degree,lessonId,markStatusId,createdBy) VALUES ?`,
+    `INSERT IGNORE INTO masterSheetMarks (masterSheetId,studentId,masterSheetMarkTypeId,degree,lessonId,markStatusId,createdBy) VALUES ?`,
     [marks],
     (err, resultApp) => {
       if (err) {
