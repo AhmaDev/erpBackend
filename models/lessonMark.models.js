@@ -44,7 +44,7 @@ LessonMark.getAllMarkTypes = function (result) {
   });
 };
 
-LessonMark.getAllMarkTypesWithHidden = function (result) {
+LessonMark.getAllMarkTypesHidden = function (result) {
   connection.query(`SELECT * FROM markType`, (err, res) => {
     if (err) {
       console.log("Error while getting all markTypes", err);
