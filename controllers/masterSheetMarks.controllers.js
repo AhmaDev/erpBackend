@@ -43,6 +43,13 @@ exports.findAll = (req, res) => {
   });
 };
 
+exports.findAllForDocuments = (req, res) => {
+  MasterSheetMarks.getAllForDocuments(req.query.numbers, (err, data) => {
+    if (err) res.sendStatus(500);
+    else res.send(data);
+  });
+};
+
 exports.findAllMarkStatus = (req, res) => {
   MasterSheetMarks.getAllMarkStatus((err, data) => {
     if (err) res.sendStatus(500);

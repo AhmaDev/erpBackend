@@ -94,6 +94,44 @@ MasterSheetMarks.getAll = function (result) {
   });
 };
 
+MasterSheetMarks.getAllForDocuments = function (collegeNumbers, result) {
+  let fields = `'idMasterSheetMarks', idMasterSheetMarks, 'studentId', studentId, 'masterSheetMarkTypeId',masterSheetMarkTypeId ,'degree', degree, 'lessonId', lessonId, 'isFinal', isFinal, 'markStatusId', markStatusId, 'lessonName', lessonName, 'lessonCredit',lessonCredit, 'studyType', studyType, 'studyYearId', studyYearId, 'studyYear', (SELECT year FROM studentPortal.YearStudy WHERE studentPortal.YearStudy.idYearStudy = studyYearId), 'isCourses', (SELECT IF(levelType.masterSheetStudyTypeId = 1, false, true) FROM levelType WHERE levelType.level = masterSheet.studyLevel AND levelType.sectionId = masterSheet.sectionId AND levelType.studyYearId = masterSheet.studyYearId LIMIT 1)`;
+
+  let levelOneQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT(${fields})) FROM masterSheetMarks JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetMarks.masterSheetId JOIN markType ON markType.idMarkType = masterSheetMarks.masterSheetMarkTypeId JOIN lesson ON lesson.idLesson = masterSheetMarks.lessonId WHERE masterSheetMarks.studentId = idStudent AND masterSheet.studyLevel = 1)`;
+  let levelTwoQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT(${fields})) FROM masterSheetMarks JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetMarks.masterSheetId JOIN markType ON markType.idMarkType = masterSheetMarks.masterSheetMarkTypeId JOIN lesson ON lesson.idLesson = masterSheetMarks.lessonId WHERE masterSheetMarks.studentId = idStudent AND masterSheet.studyLevel = 2)`;
+  let levelThreeQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT(${fields})) FROM masterSheetMarks JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetMarks.masterSheetId JOIN markType ON markType.idMarkType = masterSheetMarks.masterSheetMarkTypeId JOIN lesson ON lesson.idLesson = masterSheetMarks.lessonId WHERE masterSheetMarks.studentId = idStudent AND masterSheet.studyLevel = 3)`;
+  let levelFourQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT(${fields})) FROM masterSheetMarks JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetMarks.masterSheetId JOIN markType ON markType.idMarkType = masterSheetMarks.masterSheetMarkTypeId JOIN lesson ON lesson.idLesson = masterSheetMarks.lessonId WHERE masterSheetMarks.studentId = idStudent AND masterSheet.studyLevel = 4)`;
+  let levelFiveQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT(${fields})) FROM masterSheetMarks JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetMarks.masterSheetId JOIN markType ON markType.idMarkType = masterSheetMarks.masterSheetMarkTypeId JOIN lesson ON lesson.idLesson = masterSheetMarks.lessonId WHERE masterSheetMarks.studentId = idStudent AND masterSheet.studyLevel = 5)`;
+  connection.query(
+    `SELECT idStudent, studentName, collegeNumber , ${levelOneQuery} As level1, ${levelTwoQuery} As level2, ${levelThreeQuery} As level3, ${levelFourQuery} As level4, ${levelFiveQuery} As level5 FROM studentPortal.Student WHERE collegeNumber IN (${collegeNumbers})`,
+    (err, res) => {
+      if (err) {
+        console.log("Error while getting all MasterSheetMarks", err);
+        result(err, null);
+        return;
+      }
+      for (let i = 0; i < res.length; i++) {
+        if (res[i].level1 != null) {
+          res[i].level1 = JSON.parse(res[i].level1);
+        }
+        if (res[i].level2 != null) {
+          res[i].level2 = JSON.parse(res[i].level2);
+        }
+        if (res[i].level3 != null) {
+          res[i].level3 = JSON.parse(res[i].level3);
+        }
+        if (res[i].level4 != null) {
+          res[i].level4 = JSON.parse(res[i].level4);
+        }
+        if (res[i].level5 != null) {
+          res[i].level5 = JSON.parse(res[i].level5);
+        }
+      }
+      result(null, res);
+    },
+  );
+};
+
 MasterSheetMarks.getAllMarkStatus = function (result) {
   connection.query(`SELECT * FROM markStatus`, (err, res) => {
     if (err) {
