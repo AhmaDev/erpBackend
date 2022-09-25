@@ -60,6 +60,10 @@ Student.getAll = (queries, result) => {
     query = query + ` AND studentName LIKE '%${queries.studentName}%'`;
   }
   if (queries.collegeNumber != undefined) {
+    if (queries.collegeNumber == 0) {
+      result({ message: "no result" }, null);
+      return;
+    }
     query = query + ` AND collegeNumber LIKE '%${queries.collegeNumber}%'`;
   }
   if (queries.sectionId != undefined) {
