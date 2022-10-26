@@ -3,9 +3,9 @@ var router = express.Router();
 const teacher = require("../controllers/teacher.controllers");
 var auth = require("../middlewares/auth.middlewares");
 
-router.get("/teachers/", auth.roles("REP ADMIN"), teacher.findAll);
-router.post("/addTeacher/", auth.roles("REP ADMIN"), teacher.create);
-router.put("/teacher/:id", auth.roles("REP ADMIN"), teacher.updateOne);
-router.delete("/teacher/:id", auth.roles("REP ADMIN"), teacher.deleteOne);
+router.get("/teachers/", teacher.findAll);
+router.post("/addTeacher/", auth.roles("REP"), teacher.create);
+router.put("/teacher/:id", auth.roles("REP"), teacher.updateOne);
+router.delete("/teacher/:id", auth.roles("REP"), teacher.deleteOne);
 
 module.exports = router;

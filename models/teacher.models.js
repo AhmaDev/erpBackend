@@ -2,8 +2,8 @@ const portalConnection = require("../helpers/studentsDatabase.config");
 const connection = require("../helpers/db.config");
 
 const Teacher = function (teacher) {
-  this.teacherName = Teacher.userName;
-  this.sectionId = Teacher.sectionId;
+  this.teacherName = teacher.teacherName;
+  this.sectionId = teacher.sectionId;
 };
 
 Teacher.create = (newTeacher, result) => {
