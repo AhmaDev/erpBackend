@@ -1,4 +1,5 @@
 const connection = require("../helpers/db.config");
+const portalConnection = require("../helpers/studentsDatabase.config");
 
 const MasterSheet = function (masterSheet) {
   this.sectionId = masterSheet.sectionId;
@@ -139,7 +140,7 @@ MasterSheet.findById = function (id, result) {
   let lessonMarksSubQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT('idLessonMark', idLessonMark, 'markTypeId', markTypeId, 'markTypeName',markTypeName ,'maximumDegree', maximumDegree, 'isFinal', isFinal)) FROM lessonMark JOIN markType ON markType.idMarkType = lessonMark.markTypeId WHERE lessonMark.lessonId = lesson.idLesson)`;
 
   // GET ALL LESSONS FOR SELECTED MASTERSHEET
-  let lessonsSubQuery = `(SELECT IFNULL(JSON_ARRAYAGG(JSON_OBJECT('idLesson', idLesson, 'lessonName', lessonName, 'secondLessonName', secondLessonName, 'lessonCredit', lessonCredit, 'marks', ${lessonMarksSubQuery})),'[]') FROM lesson WHERE lesson.lessonLevel = masterSheet.studyLevel AND lesson.sectionId = masterSheet.sectionId AND lesson.yearStudyId = masterSheet.studyYearId AND lesson.lessonCourse = masterSheet.masterSheetStudyTypeId ORDER BY lesson.lessonCredit DESC) As lessons`;
+  let lessonsSubQuery = `(SELECT IFNULL(JSON_ARRAYAGG(JSON_OBJECT('idLesson', idLesson, 'lessonName', lessonName, 'secondLessonName', secondLessonName , 'teacherName', (SELECT teacherName FROM teacher WHERE idTeacher = lesson.teacherId LIMIT 1), 'lessonCredit', lessonCredit, 'marks', ${lessonMarksSubQuery})),'[]') FROM lesson WHERE lesson.lessonLevel = masterSheet.studyLevel AND lesson.sectionId = masterSheet.sectionId AND lesson.yearStudyId = masterSheet.studyYearId AND lesson.lessonCourse = masterSheet.masterSheetStudyTypeId ORDER BY lesson.lessonCredit DESC) As lessons`;
 
   // GET ALL MARKS FOR EACH STUDENT THEN ATTACH IT TO STUDENTS SUB QUERY
   let studentMarksSubQuery = `(SELECT JSON_ARRAYAGG(JSON_OBJECT('idMasterSheetMarks', idMasterSheetMarks, 'studentId', studentId, 'masterSheetMarkTypeId',masterSheetMarkTypeId ,'degree', degree, 'lessonId', lessonId, 'isFinal', isFinal, 'markStatusId', markStatusId)) FROM masterSheetMarks JOIN markType ON markType.idMarkType = masterSheetMarks.masterSheetMarkTypeId WHERE masterSheetMarks.studentId = masterSheetStudent.studentId AND masterSheetMarks.masterSheetId = masterSheet.idMasterSheet)`;
@@ -180,6 +181,158 @@ MasterSheet.findBySectionId = function (id, result) {
         result({ kind: "not_found" }, null);
       } else {
         result(null, res);
+      }
+    },
+  );
+};
+
+MasterSheet.findDocumentStudents = function (
+  sectionId,
+  level,
+  studyType,
+  yearId,
+  result,
+) {
+  let query = "";
+  let order = "";
+  let limit = "";
+  let having = "";
+
+  if (sectionId != undefined) {
+    query = query + ` AND Student.sectionId IN (${sectionId})`;
+  }
+  if (studyType != undefined) {
+    query = query + ` AND Student.studyType IN (${studyType})`;
+  }
+  if (level != undefined) {
+    query = query + ` AND masterSheet.studyLevel = ${level}`;
+  }
+  query = query + ` AND Student.studentStatusId = 1`;
+  query = query + ` AND masterSheet.masterSheetTypeId = 1`;
+  query = query + ` AND masterSheet.studyYearId = ${yearId}`;
+
+  having = having + ` AND Student.studentStatusId = 1`;
+
+  connection.query(
+    `SELECT  studentPortal.Student.idStudent, studentPortal.Student.studentName, studentPortal.Student.englishName, studentPortal.Student.collegeNumber, studentPortal.Student.studentStatusId FROM masterSheetStudent LEFT JOIN studentPortal.Student ON masterSheetStudent.studentId = studentPortal.Student.idStudent LEFT JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetStudent.masterSheetId WHERE 1=1 ${query} ${order} ${limit} HAVING 1=1 ${having}`,
+    (err, res) => {
+      if (err) {
+        console.log("Error while getting masterSheet by ID", err);
+        result(err, null);
+        return;
+      }
+      if (res.length == 0) {
+        result({ kind: "not_found" }, null);
+      } else {
+        connection.query(
+          `SELECT * FROM lesson WHERE sectionId = ${sectionId} AND yearStudyId = ${yearId} AND lessonLevel = ${level}`,
+          (lessonErr, lessonRes) => {
+            let lessonIds = JSON.stringify(
+              lessonRes.map((e) => e.idLesson),
+            ).slice(1, -1);
+            connection.query(
+              `SELECT * FROM masterSheetMarks WHERE lessonId IN (${lessonIds})`,
+              (marksErr, marksRes) => {
+                res.forEach((element) => {
+                  element.lessons = lessonRes.map(function (e) {
+                    let finalMark = 0;
+                    let marks1 = marksRes.filter(
+                      (mark) =>
+                        mark.lessonId == e.idLesson &&
+                        mark.studentId == element.idStudent &&
+                        [1, 2, 3, 4, 5, 7, 9, 10].includes(
+                          mark.masterSheetMarkTypeId,
+                        ),
+                    );
+                    let marks2 = marksRes.filter(
+                      (mark) =>
+                        mark.lessonId == e.idLesson &&
+                        mark.studentId == element.idStudent &&
+                        [1, 2, 3, 4, 6, 8, 9, 10].includes(
+                          mark.masterSheetMarkTypeId,
+                        ),
+                    );
+                    let finalMark1 = marks1.reduce((a, b) => a + b.degree, 0);
+                    let finalMark2 = marks2.reduce((a, b) => a + b.degree, 0);
+
+                    // ? CHECK IF CUSTOM MARK
+                    let customMark1 = marksRes.filter(
+                      (mark) =>
+                        mark.lessonId == e.idLesson &&
+                        mark.studentId == element.idStudent &&
+                        [11].includes(mark.masterSheetMarkTypeId),
+                    );
+                    let customMark2 = marksRes.filter(
+                      (mark) =>
+                        mark.lessonId == e.idLesson &&
+                        mark.studentId == element.idStudent &&
+                        [12].includes(mark.masterSheetMarkTypeId),
+                    );
+                    let custom1,
+                      custom2 = false;
+                    if (customMark1.length > 0) {
+                      custom1 = true;
+                      finalMark1 = customMark1[0].degree;
+                    }
+                    if (customMark2.length > 0) {
+                      custom2 = true;
+                      finalMark2 = customMark2[0].degree;
+                    }
+                    // ? CHECK IF CUSTOM MARK
+                    finalMark = {
+                      degree: finalMark1,
+                      status: finalMark1 > 49 ? "pass" : "fail",
+                      curved:
+                        finalMark1 >
+                        marksRes
+                          .filter(
+                            (mark) =>
+                              mark.lessonId == e.idLesson &&
+                              mark.studentId == element.idStudent &&
+                              [1, 2, 3, 4, 5, 7, 9, 10].includes(
+                                mark.masterSheetMarkTypeId,
+                              ),
+                          )
+                          .reduce((a, b) => a + b.degree, 0),
+                    };
+                    finalMark2 = {
+                      degree: finalMark1 > 49 ? finalMark1 : finalMark2,
+                      status:
+                        finalMark1 > 49
+                          ? "pass in first try"
+                          : finalMark2 > 49
+                          ? "pass"
+                          : "fail",
+                      curved:
+                        finalMark2 >
+                        marksRes
+                          .filter(
+                            (mark) =>
+                              mark.lessonId == e.idLesson &&
+                              mark.studentId == element.idStudent &&
+                              [1, 2, 3, 4, 6, 8, 9, 10].includes(
+                                mark.masterSheetMarkTypeId,
+                              ),
+                          )
+                          .reduce((a, b) => a + b.degree, 0),
+                    };
+                    return {
+                      lessonId: e.idLesson,
+                      lessonName: e.lessonName,
+                      lessonEnglishName: e.secondLessonName,
+                      lessonCredit: e.lessonCredit,
+                      mark: {
+                        firstTry: finalMark,
+                        secondTry: finalMark2,
+                      },
+                    };
+                  });
+                });
+                result(null, res);
+              },
+            );
+          },
+        );
       }
     },
   );
