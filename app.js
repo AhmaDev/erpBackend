@@ -9,7 +9,11 @@ var app = express();
 
 // app.use(history());
 
-app.use(logger("dev"));
+app.use(
+  logger(
+    ':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length]',
+  ),
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
