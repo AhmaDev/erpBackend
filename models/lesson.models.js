@@ -11,6 +11,8 @@ const Lesson = function (lesson) {
   this.yearStudyId = lesson.yearStudyId;
   this.createdBy = lesson.createdBy;
   this.lessonCourse = lesson.lessonCourse;
+  this.scheduleTeacherId = lesson.scheduleTeacherId;
+  this.practicalGroupId = lesson.practicalGroupId;
 };
 
 Lesson.create = function (newLesson, result) {
@@ -72,6 +74,57 @@ Lesson.getAll = function (queries, result) {
         return;
       }
       fixedJson = res.map((row) => ((row.marks = JSON.parse(row.marks)), row));
+      result(null, res);
+    },
+  );
+};
+Lesson.findAllLessonsForSchedule = function (queries, result) {
+  /** 
+        @param {int} sectionId - EXAMPLE: 31 OR 31,14
+        @param {int} teacherId - EXAMPLE: 1 OR 1,2,3
+        @param {int} yearStudyId - EXAMPLE: 1
+        @param {int} lessonCourse - EXAMPLE: 1
+        @param {int} level - EXAMPLE: 1
+        @param {String} order - EXAMPLE: level
+        @param {String} sort - EXAMPLE: ASC OR DESC *order param is reqiured
+        @param {int} limit - EXAMPLE: 100
+    **/
+
+  let query = "";
+  let order = "";
+  let limit = "";
+
+  if (queries.sectionId !== undefined) {
+    query = query + ` AND lesson.sectionId IN (${queries.sectionId})`;
+  }
+  if (queries.teacherId !== undefined) {
+    query = query + ` AND teacherId IN (${queries.teacherId})`;
+  }
+  if (queries.yearStudyId !== undefined) {
+    query = query + ` AND yearStudyId = ${queries.yearStudyId}`;
+  }
+  if (queries.lessonCourse !== undefined) {
+    query = query + ` AND lessonCourse = ${queries.lessonCourse}`;
+  }
+  if (queries.level !== undefined) {
+    query = query + ` AND lessonLevel = ${queries.level}`;
+  }
+
+  if (queries.order != undefined) {
+    order = "ORDER BY " + queries.order + " " + queries.sort;
+  }
+
+  if (queries.limit != undefined) {
+    limit = `LIMIT ${queries.limit}`;
+  }
+  connection.query(
+    `SELECT lesson.* , teacher.*, studentPortal.YearStudy.year FROM lesson LEFT JOIN teacher ON lesson.teacherId = teacher.idTeacher LEFT JOIN studentPortal.YearStudy ON studentPortal.YearStudy.idYearStudy = lesson.yearStudyId WHERE 1=1 ${query} ${order} ${limit}`,
+    (err, res) => {
+      if (err) {
+        console.log("Error while getting all lessons", err);
+        result(err, null);
+        return;
+      }
       result(null, res);
     },
   );

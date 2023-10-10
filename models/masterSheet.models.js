@@ -207,7 +207,7 @@ MasterSheet.findDocumentStudents = function (
   if (level != undefined) {
     query = query + ` AND masterSheet.studyLevel = ${level}`;
   }
-  query = query + ` AND Student.studentStatusId = 1`;
+  query = query + ` AND Student.studentStatusId IN (1,3)`;
   query = query + ` AND masterSheet.masterSheetTypeId = 1`;
   query = query + ` AND masterSheet.studyYearId = ${yearId}`;
 
@@ -231,7 +231,7 @@ MasterSheet.findDocumentStudents = function (
               lessonRes.map((e) => e.idLesson),
             ).slice(1, -1);
             connection.query(
-              `SELECT * FROM masterSheetMarks WHERE lessonId IN (${lessonIds})`,
+              `SELECT * FROM masterSheetMarks WHERE lessonId IN (${lessonIds}) GROUP BY lessonId,studentId, masterSheetMarkTypeId`,
               (marksErr, marksRes) => {
                 res.forEach((element) => {
                   element.lessons = lessonRes.map(function (e) {
@@ -321,6 +321,7 @@ MasterSheet.findDocumentStudents = function (
                       lessonName: e.lessonName,
                       lessonEnglishName: e.secondLessonName,
                       lessonCredit: e.lessonCredit,
+                      lessonCourse: e.lessonCourse,
                       mark: {
                         firstTry: finalMark,
                         secondTry: finalMark2,

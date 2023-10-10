@@ -31,6 +31,7 @@ app.use(apiBaseUrl, require("./routes/levelType.routes"));
 app.use(apiBaseUrl, require("./routes/masterSheetMarks.routes"));
 app.use(apiBaseUrl, require("./routes/masterSheetStudent.routes"));
 app.use(apiBaseUrl, require("./routes/teacher.routes"));
+app.use(apiBaseUrl, require("./routes/timetable.routes"));
 
 app.use(express.static(path.join(__dirname, "public")));
 
