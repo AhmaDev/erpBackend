@@ -211,7 +211,7 @@ MasterSheet.findDocumentStudents = function (
   query = query + ` AND masterSheet.masterSheetTypeId = 1`;
   query = query + ` AND masterSheet.studyYearId = ${yearId}`;
 
-  having = having + ` AND Student.studentStatusId = 1`;
+  having = having + ` AND Student.studentStatusId IN (1,3)`;
 
   connection.query(
     `SELECT  studentPortal.Student.idStudent, studentPortal.Student.studentName, studentPortal.Student.englishName, studentPortal.Student.collegeNumber, studentPortal.Student.studentStatusId FROM masterSheetStudent LEFT JOIN studentPortal.Student ON masterSheetStudent.studentId = studentPortal.Student.idStudent LEFT JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetStudent.masterSheetId WHERE 1=1 ${query} ${order} ${limit} HAVING 1=1 ${having}`,

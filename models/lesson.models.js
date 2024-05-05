@@ -66,7 +66,7 @@ Lesson.getAll = function (queries, result) {
     limit = `LIMIT ${queries.limit}`;
   }
   connection.query(
-    `SELECT lesson.* , teacher.*, studentPortal.YearStudy.year , IFNULL((SELECT JSON_ARRAYAGG(JSON_OBJECT('idLessonMark', idLessonMark, 'markTypeId', markTypeId, 'markTypeName',markTypeName ,'maximumDegree', maximumDegree)) FROM lessonMark JOIN markType ON markType.idMarkType = lessonMark.markTypeId WHERE lessonMark.lessonId = lesson.idLesson),'[]') As marks FROM lesson LEFT JOIN teacher ON lesson.teacherId = teacher.idTeacher LEFT JOIN studentPortal.YearStudy ON studentPortal.YearStudy.idYearStudy = lesson.yearStudyId WHERE 1=1 ${query} ${order} ${limit}`,
+    `SELECT lesson.* , teacher.teacherName, teacher.idTeacher, studentPortal.YearStudy.year , IFNULL((SELECT JSON_ARRAYAGG(JSON_OBJECT('idLessonMark', idLessonMark, 'markTypeId', markTypeId, 'markTypeName',markTypeName ,'maximumDegree', maximumDegree)) FROM lessonMark JOIN markType ON markType.idMarkType = lessonMark.markTypeId WHERE lessonMark.lessonId = lesson.idLesson),'[]') As marks FROM lesson LEFT JOIN teacher ON lesson.teacherId = teacher.idTeacher LEFT JOIN studentPortal.YearStudy ON studentPortal.YearStudy.idYearStudy = lesson.yearStudyId WHERE 1=1 ${query} ${order} ${limit}`,
     (err, res) => {
       if (err) {
         console.log("Error while getting all lessons", err);
@@ -118,7 +118,7 @@ Lesson.findAllLessonsForSchedule = function (queries, result) {
     limit = `LIMIT ${queries.limit}`;
   }
   connection.query(
-    `SELECT lesson.* , teacher.*, studentPortal.YearStudy.year FROM lesson LEFT JOIN teacher ON lesson.teacherId = teacher.idTeacher LEFT JOIN studentPortal.YearStudy ON studentPortal.YearStudy.idYearStudy = lesson.yearStudyId WHERE 1=1 ${query} ${order} ${limit}`,
+    `SELECT lesson.* , teacher.teacherName, teacher.idTeacher, studentPortal.YearStudy.year FROM lesson LEFT JOIN teacher ON lesson.teacherId = teacher.idTeacher LEFT JOIN studentPortal.YearStudy ON studentPortal.YearStudy.idYearStudy = lesson.yearStudyId WHERE 1=1 ${query} ${order} ${limit}`,
     (err, res) => {
       if (err) {
         console.log("Error while getting all lessons", err);
