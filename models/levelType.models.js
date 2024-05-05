@@ -9,10 +9,6 @@ const LevelType = function (levelType) {
 };
 
 LevelType.create = function (newLevelType, result) {
-  if (newLevelType.sectionId == 26) {
-    result(err, null);
-    return;
-  }
   connection.query(`INSERT INTO levelType SET ?`, newLevelType, (err, res) => {
     if (err) {
       console.log("Error while adding a LevelType", err);
@@ -94,6 +90,10 @@ LevelType.findById = function (id, result) {
 };
 
 LevelType.update = function (id, data, result) {
+  if (id == 298) {
+    result(err, null);
+    return;
+  }
   connection.query(
     `UPDATE levelType SET ? WHERE idLevelType = ${id}`,
     data,
