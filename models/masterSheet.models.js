@@ -214,8 +214,9 @@ MasterSheet.findDocumentStudents = function (
   having = having + ` AND Student.studentStatusId IN (1,3)`;
 
   connection.query(
-    `SELECT  studentPortal.Student.idStudent, studentPortal.Student.studentName, studentPortal.Student.englishName, studentPortal.Student.collegeNumber, studentPortal.Student.studentStatusId FROM masterSheetStudent LEFT JOIN studentPortal.Student ON masterSheetStudent.studentId = studentPortal.Student.idStudent LEFT JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetStudent.masterSheetId WHERE 1=1 ${query} ${order} ${limit} HAVING 1=1 ${having}`,
+    `SELECT  studentPortal.Student.idStudent, studentPortal.Student.studentName, studentPortal.Student.englishName, studentPortal.Student.collegeNumber, studentPortal.Student.studentStatusId FROM masterSheetStudent LEFT JOIN studentPortal.Student ON masterSheetStudent.studentId = studentPortal.Student.idStudent LEFT JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetStudent.masterSheetId WHERE 1=1 ${query} ${order} ${limit} GROUP BY studentPortal.Student.idStudent HAVING 1=1 ${having}`,
     (err, res) => {
+      console.log(`SELECT  studentPortal.Student.idStudent, studentPortal.Student.studentName, studentPortal.Student.englishName, studentPortal.Student.collegeNumber, studentPortal.Student.studentStatusId FROM masterSheetStudent LEFT JOIN studentPortal.Student ON masterSheetStudent.studentId = studentPortal.Student.idStudent LEFT JOIN masterSheet ON masterSheet.idMasterSheet = masterSheetStudent.masterSheetId WHERE 1=1 ${query} ${order} ${limit} GROUP BY studentPortal.Student.idStudent HAVING 1=1 ${having}`);
       if (err) {
         console.log("Error while getting masterSheet by ID", err);
         result(err, null);
@@ -301,8 +302,8 @@ MasterSheet.findDocumentStudents = function (
                         finalMark1 > 49
                           ? "pass in first try"
                           : finalMark2 > 49
-                          ? "pass"
-                          : "fail",
+                            ? "pass"
+                            : "fail",
                       curved:
                         finalMark2 >
                         marksRes
